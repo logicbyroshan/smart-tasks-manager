@@ -1,0 +1,180 @@
+{% extends 'todo/base.html' %}
+{% load static %}
+
+{% block title %}Settings - TaskMitra{% endblock title %}
+
+{% block styles %}
+    {# Link the page-specific stylesheet #}
+    <link rel="stylesheet" href="{% static 'todo/css/settings.css' %}">
+    <style>
+        /* Add these styles to your settings.css for better presentation */
+        .alert {
+            padding: 1rem;
+            margin-bottom: 1rem;
+            border: 1px solid transparent;
+            border-radius: .25rem;
+        }
+        .alert-success {
+            color: #0f5132;
+            background-color: #d1e7dd;
+            border-color: #badbcc;
+        }
+        .profile-pic-preview {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-bottom: 15px;
+            border: 2px solid var(--border-color);
+        }
+    </style>
+{% endblock styles %}
+
+{% block content %}
+<section class="welcome-section">
+    <h2>Settings</h2>
+</section>
+
+{# Display success messages from the view #}
+{% if messages %}
+    {% for message in messages %}
+        <div class="alert alert-success">{{ message }}</div>
+    {% endfor %}
+{% endif %}
+
+<div class="settings-grid">
+    <!-- Profile Settings Card -->
+    <article class="settings-card">
+        <header class="settings-card-header">
+            <h3><i class="fas fa-user-edit"></i> Profile Information</h3>
+        </header>
+        <div class="settings-card-body">
+            {# This form now handles both user data and profile picture upload #}
+            <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                
+                <div class="form-group">
+                    <label for="{{ u_form.username.id_for_label }}">Username</label>
+                    {{ u_form.username }}
+                    {{ u_form.username.errors }}
+                </div>
+                 <div class="form-group">
+                    <label for="{{ u_form.first_name.id_for_label }}">First Name</label>
+                    {{ u_form.first_name }}
+                    {{ u_form.first_name.errors }}
+                </div>
+                 <div class="form-group">
+                    <label for="{{ u_form.last_name.id_for_label }}">Last Name</label>
+                    {{ u_form.last_name }}
+                    {{ u_form.last_name.errors }}
+                </div>
+                <div class="form-group">
+                    <label for="{{ u_form.email.id_for_label }}">Email</label>
+                    {{ u_form.email }}
+                    {{ u_form.email.errors }}
+                </div>
+
+                <hr style="border-color: var(--border-color); margin: 20px 0;">
+
+                <div class="form-group">
+                    <label>Profile Picture</label>
+                    <img class="profile-pic-preview" src="{{ user.profile.image.url }}" alt="Current profile picture">
+                    {{ p_form.image }}
+                    {{ p_form.image.errors }}
+                </div>
+                
+                <button type="submit" name="update_profile" class="btn-submit">Save Changes</button>
+            </form>
+        </div>
+    </article>
+
+    <!-- Appearance Settings Card -->
+    <article class="settings-card">
+        <header class="settings-card-header">
+            <h3><i class="fas fa-palette"></i> Appearance</h3>
+        </header>
+        <div class="settings-card-body">
+            <div class="form-group">
+                <label>Theme</label>
+                <div class="theme-selector">
+                    <button class="theme-option active" data-theme="dark">Dark</button>
+                    <button class="theme-option" data-theme="light">Light</button>
+                    <button class="theme-option" data-theme="system">System</button>
+                </div>
+            </div>
+        </div>
+    </article>
+
+    <article class="settings-card">
+        <header class="settings-card-header">
+            <h3><i class="fas fa-key"></i> Change Password</h3>
+        </header>
+        <div class="settings-card-body">
+            <form method="post">
+                {% csrf_token %}
+
+                {# Display any non-field errors (e.g., "Old password incorrect") #}
+                {{ pass_form.non_field_errors }}
+                
+                <div class="form-group">
+                    <label for="{{ pass_form.old_password.id_for_label }}">Old Password</label>
+                    {{ pass_form.old_password }}
+                    {{ pass_form.old_password.errors }}
+                </div>
+                 <div class="form-group">
+                    <label for="{{ pass_form.new_password1.id_for_label }}">New Password</label>
+                    {{ pass_form.new_password1 }}
+                    {{ pass_form.new_password1.errors }}
+                </div>
+                 <div class="form-group">
+                    <label for="{{ pass_form.new_password2.id_for_label }}">Confirm New Password</label>
+                    {{ pass_form.new_password2 }}
+                    {{ pass_form.new_password2.errors }}
+                </div>
+                
+                <button type="submit" name="change_password" class="btn-submit">Update Password</button>
+            </form>
+        </div>
+    </article>
+
+    <!-- Notification Settings Card -->
+    <article class="settings-card">
+        <header class="settings-card-header">
+            <h3><i class="fas fa-bell"></i> Notifications</h3>
+        </header>
+        <div class="settings-card-body">
+            <div class="setting-item">
+                <span>Task Reminders</span>
+                <label class="switch"><input type="checkbox" checked><span class="slider"></span></label>
+            </div>
+            <div class="setting-item">
+                <span>Due Date Alerts</span>
+                <label class="switch"><input type="checkbox" checked><span class="slider"></span></label>
+            </div>
+             <div class="setting-item">
+                <span>App Updates</span>
+                <label class="switch"><input type="checkbox"><span class="slider"></span></label>
+            </div>
+        </div>
+    </article>
+
+    <!-- Danger Zone -->
+    <article class="settings-card danger-zone">
+        <header class="settings-card-header">
+            <h3><i class="fas fa-exclamation-triangle"></i> Danger Zone</h3>
+        </header>
+        <div class="settings-card-body">
+            <form method="post" action="#" onsubmit="return confirm('Are you absolutely sure? This will delete all your data permanently.');">
+                {% csrf_token %}
+                <div class="setting-item">
+                    <div>
+                        <strong>Clear All Data</strong>
+                        <p>Permanently delete all tasks and settings.</p>
+                    </div>
+                    <button type="submit" class="btn-danger">Clear Data</button>
+                </div>
+            </form>
+        </div>
+    </article>
+</div>
+{% endblock content %}

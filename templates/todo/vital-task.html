@@ -1,0 +1,58 @@
+{% extends 'todo/base.html' %}
+{% load static %}
+
+{% block title %}Vital Tasks - TaskMitra{% endblock title %}
+
+{% block styles %}
+    {# Link the page-specific stylesheet #}
+    <link rel="stylesheet" href="{% static 'todo/css/vital-task.css' %}">
+{% endblock styles %}
+
+{% block content %}
+<section class="welcome-section">
+    <h2>Vital Tasks <i class="fas fa-exclamation-triangle" style="color: var(--not-started-color);"></i></h2>
+    <a href="{% url 'task_create' %}" class="invite-btn" type="button" aria-label="Add new vital task">
+        <i class="fas fa-plus" aria-hidden="true"></i> Add Vital Task
+    </a>
+</section>
+
+<div class="vital-tasks-container">
+    {% for task in vital_tasks %}
+    <article class="vital-task-card high-priority">
+        <div class="vital-task-header">
+            <h3 class="vital-task-title">{{ task.title }}</h3>
+            <div class="vital-task-actions">
+                <a href="{% url 'task_update' task.id %}" class="task-menu-btn" aria-label="Edit Task Options">
+                    <i class="fas fa-ellipsis-h"></i>
+                </a>
+            </div>
+        </div>
+        {% if task.description %}
+        <p class="vital-task-description">{{ task.description|truncatewords:30 }}</p>
+        {% endif %}
+        <div class="vital-task-footer">
+            <div class="task-meta">
+                {% if task.due_date %}
+                <span class="due-date"><i class="fas fa-calendar-alt"></i> Due: {{ task.due_date|date:"d M, Y" }}</span>
+                {% endif %}
+                <span class="status {{ task.status|slugify }}"><i class="fas fa-spinner"></i> {{ task.get_status_display }}</span>
+            </div>
+            {# The progress bar can be a future feature if you add a 'progress' field to your model #}
+            {#
+            <div class="progress-bar-container">
+                <div class="progress-bar" style="width: 50%;"></div>
+                <span class="progress-label">50%</span>
+            </div>
+            #}
+        </div>
+    </article>
+    {% empty %}
+    <div class="empty-state" style="grid-column: 1 / -1; text-align: center; padding: 40px;">
+        <div class="empty-icon"><i class="fas fa-shield-alt"></i></div>
+        <h4>No Vital Tasks</h4>
+        <p>Tasks marked with 'High' priority will appear here.</p>
+        <a href="{% url 'task_create' %}" class="btn-primary">Add a Task</a>
+    </div>
+    {% endfor %}
+</div>
+{% endblock content %}

@@ -1,0 +1,131 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes, maximum-scale=5.0">
+    
+    <!-- This title will be overridden by child templates -->
+    <title>{% block title %}TaskMitra{% endblock title %}</title>
+    
+    <meta name="description" content="TaskMitra - A modern, mobile-friendly todo app for managing your daily tasks efficiently">
+    <meta name="author" content="TaskMitra">
+    
+    <!-- Theme colors for mobile browsers -->
+    <meta name="theme-color" content="#2e86de">
+    <meta name="msapplication-TileColor" content="#2e86de">
+    
+    <!-- PWA settings -->
+    <link rel="apple-touch-icon" href="{% static 'todo/logo.png' %}">
+    <link rel="manifest" href="{% static 'todo/manifest.json' %}">
+    
+    <!-- CSS Links -->
+    <link rel="stylesheet" href="{% static 'todo/css/base.css' %}">
+    <link rel="stylesheet" href="{% static 'todo/css/style.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    
+    <!-- Block for any page-specific CSS -->
+    {% block styles %}{% endblock styles %}
+</head>
+<body>
+    <div class="container">
+        <!-- Main Navigation Header (Consistent across all pages) -->
+        <header class="navbar" role="banner">
+            <div class="navbar-left">
+                <img src="{% static 'todo/logo.png' %}" alt="TaskMitra Logo" class="logo-img">
+                <a href="{% url 'dashboard' %}" style="text-decoration: none;">
+                    <h1 class="logo">Task<span>Mitra</span></h1>
+                </a>
+            </div>
+            <div class="navbar-right">
+                <div class="search-bar" role="search">
+                    <label for="search-input" class="sr-only">Search tasks</label>
+                    <input type="text" id="search-input" placeholder="Search your task here..." aria-label="Search tasks">
+                    <i class="fas fa-search" aria-hidden="true"></i>
+                </div>
+                <div class="nav-icons">
+                    <button class="icon-btn" aria-label="Notifications" title="Notifications">
+                        <i class="fas fa-bell" aria-hidden="true"></i>
+                    </button>
+                    <button class="icon-btn" aria-label="Calendar" title="Calendar">
+                        <i class="fas fa-calendar-alt" aria-hidden="true"></i>
+                    </button>
+                </div>
+                <div class="date-day" role="status" aria-live="polite">
+                    <!-- This could be dynamic with JavaScript or a context processor -->
+                    <span>Tuesday</span>
+                    <span>20/06/2023</span>
+                </div>
+            </div>
+        </header>
+
+        <div class="main-wrapper">
+            <!-- Include the Sidebar Partial -->
+            {% include 'todo/partials/sidebar.html' %}
+
+            <!-- Main Content Area (This will be filled by child templates) -->
+            <main class="content-area" role="main">
+                {% block content %}
+                <!-- Page-specific content will go here -->
+                {% endblock content %}
+            </main>
+        </div>
+    </div>
+
+    {% if user.is_authenticated %}
+    <div id="add-task-modal" class="task-modal" style="display: none;">
+        <div class="modal-backdrop"></div>
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Add New Task</h3>
+                <button class="close-modal" aria-label="Close">&times;</button>
+            </div>
+            {# The action points to our task_create view #}
+            <form id="add-task-form" class="task-form" method="post" action="{% url 'task_create' %}">
+            {% csrf_token %}
+            <div class="modal-body">
+                
+                <div class="form-group">
+                    <label for="{{ task_create_form.title.id_for_label }}">Title:</label>
+                    {{ task_create_form.title }}
+                </div>
+                
+                <div class="form-group">
+                    <label for="{{ task_create_form.description.id_for_label }}">Description:</label>
+                    {{ task_create_form.description }}
+                </div>
+                
+                <div class="form-group">
+                    <label for="{{ task_create_form.category.id_for_label }}">Category:</label>
+                    {{ task_create_form.category }}
+                </div>
+                
+                <div class="form-group">
+                    <label for="{{ task_create_form.priority.id_for_label }}">Priority:</label>
+                    {{ task_create_form.priority }}
+                </div>
+                
+                <div class="form-group">
+                    <label for="{{ task_create_form.status.id_for_label }}">Status:</label>
+                    {{ task_create_form.status }}
+                </div>
+                
+                <div class="form-group">
+                    <label for="{{ task_create_form.due_date.id_for_label }}">Due date:</label>
+                    {{ task_create_form.due_date }}
+                </div>
+
+            </div>
+            <div class="modal-actions form-actions">
+                <button type="button" class="btn-cancel">Cancel</button>
+                <button type="submit" class="btn-submit">Add Task</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endif %}
+
+    <script src="{% static 'todo/js/script.js' %}"></script>
+    {% block scripts %}{% endblock scripts %}
+</body>
+</html>

@@ -1,0 +1,100 @@
+/* todo/static/todo/css/auth.css */
+
+body {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    background-color: var(--primary-bg);
+}
+
+.auth-container {
+    background-color: var(--secondary-bg);
+    padding: 40px;
+    border-radius: 12px;
+    border: 1px solid var(--border-color);
+    width: 100%;
+    max-width: 420px;
+    text-align: center;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
+}
+
+.auth-header .logo {
+    font-size: 2em;
+    font-weight: 600;
+    color: var(--highlight-color);
+    margin-bottom: 10px;
+}
+
+.auth-header .logo span {
+    color: var(--accent-color);
+}
+
+.auth-header h2 {
+    margin-bottom: 25px;
+    color: #ccc;
+    font-weight: 400;
+}
+
+.auth-form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    text-align: left;
+}
+
+.auth-form p {
+    margin: 0;
+}
+
+.auth-form label {
+    display: none; /* Hide default labels */
+}
+
+.auth-form input {
+    width: 100%;
+    padding: 12px 15px;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    background-color: var(--primary-bg);
+    color: var(--text-color);
+    font-size: 1em;
+    box-sizing: border-box; /* Important for padding */
+}
+
+.auth-form .helptext {
+    font-size: 0.8em;
+    color: #888;
+    margin-top: -10px;
+    padding-left: 5px;
+}
+.auth-form ul.errorlist {
+    list-style: none;
+    padding: 0;
+    color: var(--not-started-color);
+    font-size: 0.9em;
+    margin: -5px 0 5px 0;
+}
+
+
+.auth-submit-btn {
+    margin-top: 15px;
+    padding: 12px;
+    font-size: 1.1em;
+    font-weight: 600;
+}
+
+.auth-switch-link {
+    margin-top: 25px;
+    color: #999;
+}
+
+.auth-switch-link a {
+    color: var(--accent-color);
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.auth-switch-link a:hover {
+    text-decoration: underline;
+}

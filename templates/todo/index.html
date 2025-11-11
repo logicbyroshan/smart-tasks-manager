@@ -1,0 +1,111 @@
+{% extends 'todo/base.html' %}
+{% load static %}
+
+{% block title %}Dashboard - TaskMitra{% endblock title %}
+
+{% block content %}
+<section class="welcome-section">
+    <h2>Welcome back, {{ user.first_name|default:user.username }} <span class="wave-emoji" role="img" aria-label="waving hand">👋</span></h2>
+    <a href="{% url 'task_create' %}" class="invite-btn" type="button" aria-label="Add new task">
+        <i class="fas fa-plus" aria-hidden="true"></i> Add Task
+    </a>
+</section>
+
+<div class="content-grid">
+    <!-- To-Do Tasks Section -->
+    <section class="to-do-section" aria-labelledby="todo-heading">
+        <div class="todo-header">
+            <h3 id="todo-heading">Recent Tasks</h3>
+            <div class="filter-options">
+                <!-- This can be made dynamic with JavaScript or link to filtered views -->
+                <label for="filter">Filter:</label>
+                <select id="filter" aria-label="Filter tasks by time period">
+                    <option value="all">All</option>
+                    <option value="today">Today</option>
+                    <option value="this-week">This Week</option>
+                    <option value="this-month">This Month</option>
+                </select>
+            </div>
+        </div>
+        
+        <div id="tasks-container" role="list" aria-label="Task list">
+            {% for task in recent_tasks %}
+            <article class="task-card" role="listitem">
+                <div class="task-header">
+                    <!-- The checkbox can be part of a form to quickly complete a task -->
+                    <form action="{% url 'task_update' task.id %}" method="post" class="d-inline">
+                        {% csrf_token %}
+                        <input type="hidden" name="status" value="completed">
+                        <input type="checkbox" name="task{{ task.id }}" id="task{{ task.id }}" onchange="this.form.submit()">
+                    </form>
+                    <label for="task{{ task.id }}">{{ task.title }}</label>
+                    <a href="{% url 'task_update' task.id %}" class="task-menu-btn" aria-label="Edit task">
+                        <i class="fas fa-ellipsis-h" aria-hidden="true"></i>
+                    </a>
+                </div>
+                {% if task.description %}
+                <p id="task{{ task.id }}-desc">{{ task.description|truncatewords:20 }}</p>
+                {% endif %}
+                <div class="task-footer" id="task{{ task.id }}-meta">
+                    <span class="priority {{ task.priority }}" role="status">Priority: {{ task.get_priority_display }}</span>
+                    <span class="status {{ task.status|slugify }}" role="status">Status: {{ task.get_status_display }}</span>
+                    <span class="created-on">Created: {{ task.created_at|date:"d/m/Y" }}</span>
+                </div>
+            </article>
+            {% empty %}
+            <div class="empty-state">
+                <div class="empty-icon"><i class="fas fa-check-square"></i></div>
+                <h4>All clear!</h4>
+                <p>You have no pending tasks. Add a new one to get started.</p>
+            </div>
+            {% endfor %}
+        </div>
+    </section>
+
+    <!-- Right Sidebar Content -->
+    <div class="right-content">
+        <!-- Task Status Overview -->
+        <section class="task-status-cards" aria-labelledby="status-heading">
+            <h3 id="status-heading">Task Status</h3>
+            <div class="status-card">
+                <div class="status-item" role="status">
+                    <span class="status-label">Not Started</span>
+                    <span class="status-count not-started" aria-label="{{ not_started_count }} not started tasks">{{ not_started_count }}</span>
+                </div>
+                <div class="status-item" role="status">
+                    <span class="status-label">In Progress</span>
+                    <span class="status-count in-progress" aria-label="{{ in_progress_count }} in progress tasks">{{ in_progress_count }}</span>
+                </div>
+                <div class="status-item" role="status">
+                    <span class="status-label">Completed</span>
+                    <span class="status-count completed" aria-label="{{ completed_count }} completed tasks">{{ completed_count }}</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Completed Tasks Section -->
+        <section class="completed-tasks-section" aria-labelledby="completed-heading">
+            <h3 id="completed-heading">Recently Completed</h3>
+            <div id="completed-tasks-container" role="list" aria-label="Completed tasks list">
+                {% for task in recently_completed_tasks %}
+                <article class="completed-task-card" role="listitem">
+                    <div class="task-header">
+                        <input type="checkbox" name="completed-task{{ task.id }}" id="completed-task{{ task.id }}" checked disabled>
+                        <label for="completed-task{{ task.id }}">{{ task.title }}</label>
+                    </div>
+                    <div class="task-footer">
+                        <span class="status completed" role="status">Status: {{ task.get_status_display }}</span>
+                        <span class="created-on">Completed {{ task.completed_at|timesince }} ago</span>
+                    </div>
+                </article>
+                {% empty %}
+                <p style="text-align: center; color: #888;">No tasks completed recently.</p>
+                {% endfor %}
+            </div>
+        </section>
+    </div>
+</div>
+{% endblock content %}
+
+{% block scripts %}
+{% endblock scripts %}

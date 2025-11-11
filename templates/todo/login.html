@@ -1,0 +1,41 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - TaskMitra</title>
+    <link rel="stylesheet" href="{% static 'todo/css/base.css' %}">
+    <link rel="stylesheet" href="{% static 'todo/css/auth.css' %}">
+</head>
+<body>
+    <div class="auth-container">
+        <div class="auth-header">
+            <h1 class="logo">Task<span>Mitra</span></h1>
+            <h2>Welcome Back!</h2>
+        </div>
+
+        <form method="post" class="auth-form">
+            {% csrf_token %}
+            {{ form.non_field_errors }}
+            {% for field in form %}
+                <div>
+                    {{ field.errors }}
+                    <input type="{{ field.field.widget.input_type }}" name="{{ field.name }}" id="{{ field.id_for_label }}" placeholder="{{ field.label }}" class="form-control">
+                </div>
+            {% endfor %}
+
+            <!-- ADD THIS FORGOT PASSWORD LINK -->
+            <div style="text-align: right; font-size: 0.9em; margin-top: -10px;">
+                <a href="{% url 'password_reset' %}" class="auth-switch-link">Forgot Password?</a>
+            </div>
+
+            <button type="submit" class="btn-submit auth-submit-btn">Log In</button>
+        </form>
+
+        <p class="auth-switch-link">
+            Don't have an account? <a href="{% url 'register' %}">Sign Up</a>
+        </p>
+    </div>
+</body>
+</html>

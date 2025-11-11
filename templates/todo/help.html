@@ -1,0 +1,75 @@
+{% extends 'todo/base.html' %}
+{% load static %}
+
+{% block title %}Help & Support - TaskMitra{% endblock title %}
+
+{% block styles %}
+    {# Link the page-specific stylesheet #}
+    <link rel="stylesheet" href="{% static 'todo/css/help.css' %}">
+{% endblock styles %}
+
+{% block content %}
+<section class="welcome-section">
+    <h2>Help & Support</h2>
+</section>
+
+<div class="help-content">
+    <!-- Getting Started Guide -->
+    <div class="help-section">
+        <h3><i class="fas fa-rocket"></i> Getting Started</h3>
+        <p>Welcome to TaskMitra! Here are a few quick tips to get you started:</p>
+        <ul>
+            <li>Click the <strong>"Add Task"</strong> button on any page to create a new task.</li>
+            <li>Navigate between pages using the sidebar on the left.</li>
+            <li>Organize your tasks using the <strong><a href="{% url 'task_categories' %}">Task Categories</a></strong> page.</li>
+            <li>Customize your experience in the <strong><a href="{% url 'settings' %}">Settings</a></strong> page.</li>
+        </ul>
+    </div>
+
+    <!-- FAQ Section with Accordion -->
+    <div class="help-section">
+        <h3><i class="fas fa-question"></i> Frequently Asked Questions</h3>
+        <div class="faq-accordion">
+            <details class="faq-item">
+                <summary class="faq-question">How do I edit an existing task?</summary>
+                <div class="faq-answer">
+                    <p>To edit a task, go to the "My Tasks" page, click on the task card to open the detailed view, and then click the "Edit Task" button. This will open a modal where you can modify the task's details.</p>
+                </div>
+            </details>
+
+            <details class="faq-item">
+                <summary class="faq-question">Can I use this app offline?</summary>
+                <div class="faq-answer">
+                    <p>Yes! TaskMitra is a Progressive Web App (PWA) with offline capabilities. After your first visit, the app will be cached, allowing you to view and create tasks even without an internet connection. Any changes you make offline will sync automatically when you reconnect.</p>
+                </div>
+            </details>
+
+            <details class="faq-item">
+                <summary class="faq-question">How do I change the theme?</summary>
+                <div class="faq-answer">
+                    <p>You can change the theme by navigating to the "Settings" page. Under the "Appearance" section, you can choose between Dark, Light, or System default themes.</p>
+                </div>
+            </details>
+             <details class="faq-item">
+                <summary class="faq-question">What are Vital Tasks?</summary>
+                <div class="faq-answer">
+                    <p>The "Vital Task" page is designed to highlight your most critical, high-priority tasks. This helps you focus on what's most important without the distraction of other lower-priority items.</p>
+                </div>
+            </details>
+        </div>
+    </div>
+
+    <!-- Contact Support Section -->
+    <div class="help-section">
+         <h3><i class="fas fa-life-ring"></i> Contact Support</h3>
+         <div class="contact-card">
+             <p>Still have questions? Our support team is here to help you.</p>
+             <div class="contact-buttons">
+                 {# These can be linked to mailto: or actual contact pages #}
+                 <a href="#" class="btn-primary"><i class="fas fa-envelope"></i> Email Support</a>
+                 <a href="#" class="btn-secondary"><i class="fas fa-book"></i> Read Docs</a>
+             </div>
+         </div>
+    </div>
+</div>
+{% endblock content %}

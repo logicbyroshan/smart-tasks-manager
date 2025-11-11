@@ -1,0 +1,140 @@
+/* 
+==============================================
+TASK CATEGORIES PAGE STYLES
+==============================================
+*/
+
+/* Grid container for the category cards */
+#category-cards-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 25px;
+    margin-top: 20px;
+}
+
+/* Individual category card styling */
+.category-card {
+    background-color: var(--secondary-bg);
+    border-radius: 12px;
+    padding: 20px;
+    border-top: 5px solid var(--category-color, var(--accent-color)); /* Use CSS variable for color */
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.category-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+}
+
+/* Header section of the card */
+.category-header {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.category-icon {
+    font-size: 1.8em;
+    color: var(--category-color, var(--accent-color));
+    background-color: rgba(255, 255, 255, 0.05);
+    width: 50px;
+    height: 50px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.category-info {
+    flex-grow: 1;
+}
+
+.category-name {
+    margin: 0;
+    font-size: 1.2em;
+    color: var(--highlight-color);
+}
+
+.category-task-count {
+    font-size: 0.9em;
+    color: #999;
+}
+
+/* Progress section of the card */
+.category-progress p {
+    margin: 0 0 8px 0;
+    font-size: 0.85em;
+    color: #ccc;
+}
+
+.progress-bar-container {
+    background-color: var(--border-color);
+    border-radius: 20px;
+    height: 10px;
+    width: 100%;
+    position: relative;
+    overflow: hidden;
+}
+
+.progress-bar {
+    background-color: var(--category-color, var(--accent-color));
+    height: 100%;
+    border-radius: 20px;
+}
+
+.progress-label {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 0.7em;
+    font-weight: bold;
+    color: var(--highlight-color);
+}
+
+/* 
+==============================================
+ADD/EDIT CATEGORY MODAL
+==============================================
+*/
+
+/* (Most modal styles are inherited from my-tasks.css) */
+/* Customizations for category modal */
+
+#category-modal .form-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+}
+
+#category-modal input[type="text"] {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    background-color: var(--primary-bg);
+    color: var(--text-color);
+    font-size: 1em;
+}
+
+#category-modal input[type="color"] {
+    width: 100%;
+    height: 45px;
+    padding: 5px;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    background-color: var(--primary-bg);
+    cursor: pointer;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    #category-cards-container {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+}
