@@ -8,6 +8,7 @@ document.addEventListener('DOMContentLoaded', () => {
     setupMobileMenu();
     updateDateTime();
     setupAddTaskModal();
+    setupEditTaskModal();
     setupPWA();
 
     // Update the date/time display every minute
@@ -71,7 +72,8 @@ function updateDateTime() {
 function setupAddTaskModal() {
     const taskModal = document.getElementById('add-task-modal');
     const addTaskForm = document.getElementById('add-task-form');
-    const openModalButtons = document.querySelectorAll('.invite-btn'); // All "Add Task" buttons
+    // Only select "Add Task" buttons, not category buttons
+    const openModalButtons = document.querySelectorAll('.invite-btn:not(#add-category-btn)');
 
     if (!taskModal || !addTaskForm) {
         // If the modal isn't on the page (e.g., user not logged in), do nothing.
@@ -160,5 +162,53 @@ function setupPWA() {
         e.preventDefault();
         deferredPrompt = e;
         // Here you could show a custom install button, but we'll keep it simple.
+    });
+}/**
+ * Sets up the edit task modal functionality.
+ */
+function setupEditTaskModal() {
+    const editModal = document.getElementById('edit-task-modal');
+    const editForm = document.getElementById('edit-task-form');
+    if (!editModal || !editForm) return;
+    const closeModal = () => { editModal.style.display = 'none'; };
+    editModal.addEventListener('click', (event) => {
+        if (event.target.classList.contains('close-modal') || event.target.classList.contains('btn-cancel') || event.target.classList.contains('modal-backdrop')) {
+            closeModal();
+        }
+    });
+    window.openEditTaskModal = function(taskId) {
+        fetch(`/task/${taskId}/update/`, { method: 'GET', headers: { 'X-Requested-With': 'XMLHttpRequest' } })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                document.getElementById('edit-task-id').value = taskId;
+                document.getElementById('edit-title').value = data.task.title;
+                document.getElementById('edit-description').value = data.task.description || '';
+                document.getElementById('edit-category').value = data.task.category || '';
+                document.getElementById('edit-priority').value = data.task.priority;
+                document.getElementById('edit-status').value = data.task.status;
+                document.getElementById('edit-due_date').value = data.task.due_date || '';
+                editModal.style.display = 'flex';
+                document.getElementById('edit-title').focus();
+            }
+        }).catch(error => alert('Failed to load task data'));
+    };
+    editForm.addEventListener('submit', (event) => {
+        event.preventDefault();
+        const taskId = document.getElementById('edit-task-id').value;
+        const formData = new FormData(editForm);
+        fetch(`/task/${taskId}/update/`, { method: 'POST', body: formData, headers: { 'X-Requested-With': 'XMLHttpRequest' } })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                window.location.reload();
+            } else {
+                let errorMessages = 'Please correct the following errors:\n\n';
+                for (const field in data.errors) {
+                    errorMessages += `- ${field}: ${data.errors[field][0]}\n`;
+                }
+                alert(errorMessages);
+            }
+        }).catch(error => alert('An unexpected error occurred.'));
     });
 }

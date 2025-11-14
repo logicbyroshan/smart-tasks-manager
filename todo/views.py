@@ -1,74 +1,18 @@
 # ----------------- Django Core Imports -----------------
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse
+from django.http import JsonResponse
 
 # ----------------- Django Contrib Imports -----------------
 from django.contrib import messages
-from django.contrib.auth import login, logout, authenticate
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth.forms import AuthenticationForm,  PasswordChangeForm
-from django.contrib.auth import update_session_auth_hash
 
 # ----------------- Database and Querying Imports -----------------
 from django.db.models import Count, Q
 
 # ----------------- Local Application Imports -----------------
 from .models import Task, Category
-from .forms import (
-    TaskForm, 
-    CategoryForm, 
-    RegistrationForm, 
-    UserUpdateForm, 
-    ProfileUpdateForm
-)
-
-
-# ==============================================================================
-#  LANDING PAGE & AUTHENTICATION VIEWS
-# ==============================================================================
-
-def landing_page_view(request):
-    if request.user.is_authenticated:
-        return redirect('dashboard')
-    return render(request, 'todo/landing.html')
-
-
-def register_view(request):
-    if request.user.is_authenticated:
-        return redirect('dashboard')
-
-    if request.method == 'POST':
-        form = RegistrationForm(request.POST)
-        if form.is_valid():
-            user = form.save()
-            login(request, user)
-            messages.success(request, 'Account created successfully!')
-            return redirect('dashboard')
-    else:
-        form = RegistrationForm()
-        
-    return render(request, 'todo/register.html', {'form': form})
-
-
-def login_view(request):
-    if request.user.is_authenticated:
-        return redirect('dashboard')
-
-    if request.method == 'POST':
-        form = AuthenticationForm(request, data=request.POST)
-        if form.is_valid():
-            user = form.get_user()
-            login(request, user)
-            return redirect('dashboard')
-    else:
-        form = AuthenticationForm()
-
-    return render(request, 'todo/login.html', {'form': form})
-
-
-def logout_view(request):
-    logout(request)
-    return redirect('login')
+from .forms import TaskForm, CategoryForm, UserUpdateForm
 
 
 # ==============================================================================
@@ -121,24 +65,6 @@ def my_tasks(request):
 
 
 @login_required
-def vital_tasks(request):
-    """
-    Displays tasks that are marked with 'High' priority and are not yet completed.
-    This helps the user focus on their most critical to-dos.
-    """
-    vital_tasks = Task.objects.filter(
-        user=request.user, 
-        priority='high'
-    ).exclude(status='completed').order_by('due_date')
-
-    context = {
-        'vital_tasks': vital_tasks,
-        'active_page': 'vital_tasks',
-    }
-    return render(request, 'todo/vital-task.html', context)
-
-
-@login_required
 def task_categories(request):
     """
     Displays all categories created by the user.
@@ -169,57 +95,24 @@ def task_categories(request):
 @login_required
 def settings_page(request):
     """
-    Handles the user settings page, which now manages two separate forms:
-    1. Profile/User information update.
-    2. Password change.
+    Handles the user settings page for profile updates only.
+    Password change removed as auth will be handled by another app.
     """
     if request.method == 'POST':
-        # Check which form was submitted by looking at the submit button's name
-        if 'update_profile' in request.POST:
-            u_form = UserUpdateForm(request.POST, instance=request.user)
-            p_form = ProfileUpdateForm(request.POST, request.FILES, instance=request.user.profile)
-            if u_form.is_valid() and p_form.is_valid():
-                u_form.save()
-                p_form.save()
-                messages.success(request, 'Your profile has been updated successfully!')
-                return redirect('settings')
-        
-        elif 'change_password' in request.POST:
-            pass_form = PasswordChangeForm(request.user, request.POST)
-            if pass_form.is_valid():
-                user = pass_form.save()
-                # IMPORTANT: This keeps the user logged in after changing their password.
-                update_session_auth_hash(request, user)
-                messages.success(request, 'Your password was successfully updated!')
-                return redirect('settings')
-            else:
-                # If the password form has errors, we need to re-instantiate the other forms
-                # so the page can render correctly with the password errors.
-                u_form = UserUpdateForm(instance=request.user)
-                p_form = ProfileUpdateForm(instance=request.user.profile)
-                context = {'active_page': 'settings', 'u_form': u_form, 'p_form': p_form, 'pass_form': pass_form}
-                return render(request, 'todo/settings.html', context)
+        u_form = UserUpdateForm(request.POST, instance=request.user)
+        if u_form.is_valid():
+            u_form.save()
+            messages.success(request, 'Your profile has been updated successfully!')
+            return redirect('settings')
 
-    # For GET requests, instantiate all forms
+    # For GET requests
     u_form = UserUpdateForm(instance=request.user)
-    p_form = ProfileUpdateForm(instance=request.user.profile)
-    pass_form = PasswordChangeForm(request.user)
 
     context = {
         'active_page': 'settings',
         'u_form': u_form,
-        'p_form': p_form,
-        'pass_form': pass_form  # Add the password form to the context
     }
     return render(request, 'todo/settings.html', context)
-
-@login_required
-def help_page(request):
-    """
-    Renders the static 'Help & Support' page.
-    """
-    context = {'active_page': 'help'}
-    return render(request, 'todo/help.html', context)
 
 
 # ==============================================================================
@@ -229,13 +122,15 @@ def help_page(request):
 @login_required
 def task_detail(request, pk):
     """
-    Fetches details for a single task.
-    This view is intended to be used by an AJAX/Fetch call to populate a modal
-    with task details without a full page reload.
+    Displays full task details on a dedicated page.
+    Shows all task information including rich text description.
     """
     task = get_object_or_404(Task, pk=pk, user=request.user)
-    # This renders a small HTML snippet, not a full page.
-    return render(request, 'todo/partials/task_detail_modal.html', {'task': task})
+    context = {
+        'task': task,
+        'active_page': 'my_tasks',
+    }
+    return render(request, 'todo/task_detail.html', context)
 
 
 @login_required
@@ -263,21 +158,34 @@ def task_create(request):
 @login_required
 def task_update(request, pk):
     """
-    Handles updating an existing task.
-    Finds the task by its primary key (pk) and renders a pre-filled form on GET.
-    Processes the submitted form on POST.
+    Handles updating an existing task via AJAX POST request.
+    Returns a JSON response indicating success or failure.
     """
     task = get_object_or_404(Task, pk=pk, user=request.user)
+    
     if request.method == 'POST':
         form = TaskForm(request.POST, instance=task, user=request.user)
         if form.is_valid():
             form.save()
-            messages.success(request, f'Task "{task.title}" updated successfully!')
-            return redirect('my_tasks')
-    else:
-        form = TaskForm(instance=task, user=request.user)
-        
-    return render(request, 'todo/task_form.html', {'form': form, 'title': 'Update Task'})
+            return JsonResponse({'success': True, 'message': 'Task updated successfully!'})
+        else:
+            # If the form is invalid, return the errors as JSON
+            return JsonResponse({'success': False, 'errors': form.errors})
+    
+    # If it's a GET request, return task data as JSON for populating the edit form
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        task_data = {
+            'title': task.title,
+            'description': task.description,
+            'category': task.category.id if task.category else '',
+            'priority': task.priority,
+            'status': task.status,
+            'due_date': task.due_date.strftime('%Y-%m-%d') if task.due_date else '',
+        }
+        return JsonResponse({'success': True, 'task': task_data})
+    
+    # Fallback for non-AJAX GET requests
+    return JsonResponse({'success': False, 'message': 'Invalid request method.'}, status=405)
 
 
 @login_required

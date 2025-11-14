@@ -4,13 +4,6 @@
 {% block title %}Dashboard - TaskMitra{% endblock title %}
 
 {% block content %}
-<section class="welcome-section">
-    <h2>Welcome back, {{ user.first_name|default:user.username }} <span class="wave-emoji" role="img" aria-label="waving hand">👋</span></h2>
-    <a href="{% url 'task_create' %}" class="invite-btn" type="button" aria-label="Add new task">
-        <i class="fas fa-plus" aria-hidden="true"></i> Add Task
-    </a>
-</section>
-
 <div class="content-grid">
     <!-- To-Do Tasks Section -->
     <section class="to-do-section" aria-labelledby="todo-heading">
@@ -25,40 +18,45 @@
                     <option value="this-week">This Week</option>
                     <option value="this-month">This Month</option>
                 </select>
+                <button class="invite-btn" type="button" aria-label="Add new task" style="margin-left: 15px;">
+                    <i class="fas fa-plus" aria-hidden="true"></i> Add Task
+                </button>
             </div>
         </div>
         
-        <div id="tasks-container" role="list" aria-label="Task list">
-            {% for task in recent_tasks %}
-            <article class="task-card" role="listitem">
-                <div class="task-header">
-                    <!-- The checkbox can be part of a form to quickly complete a task -->
-                    <form action="{% url 'task_update' task.id %}" method="post" class="d-inline">
-                        {% csrf_token %}
-                        <input type="hidden" name="status" value="completed">
-                        <input type="checkbox" name="task{{ task.id }}" id="task{{ task.id }}" onchange="this.form.submit()">
-                    </form>
-                    <label for="task{{ task.id }}">{{ task.title }}</label>
-                    <a href="{% url 'task_update' task.id %}" class="task-menu-btn" aria-label="Edit task">
-                        <i class="fas fa-ellipsis-h" aria-hidden="true"></i>
-                    </a>
+        <div class="task-list-container">
+            <div id="tasks-container" role="list" aria-label="Task list">
+                {% for task in recent_tasks %}
+                <article class="task-card" role="listitem">
+                    <div class="task-header">
+                        <!-- The checkbox can be part of a form to quickly complete a task -->
+                        <form action="{% url 'task_update' task.id %}" method="post" class="d-inline">
+                            {% csrf_token %}
+                            <input type="hidden" name="status" value="completed">
+                            <input type="checkbox" name="task{{ task.id }}" id="task{{ task.id }}" onchange="this.form.submit()">
+                        </form>
+                        <label for="task{{ task.id }}">{{ task.title }}</label>
+                        <button type="button" class="task-menu-btn" aria-label="Edit task" onclick="openEditTaskModal({{ task.id }})">
+                            <i class="fas fa-ellipsis-h" aria-hidden="true"></i>
+                        </button>
+                    </div>
+                    {% if task.description %}
+                    <p id="task{{ task.id }}-desc">{{ task.description|truncatewords:20 }}</p>
+                    {% endif %}
+                    <div class="task-footer" id="task{{ task.id }}-meta">
+                        <span class="priority {{ task.priority }}" role="status">Priority: {{ task.get_priority_display }}</span>
+                        <span class="status {{ task.status|slugify }}" role="status">Status: {{ task.get_status_display }}</span>
+                        <span class="created-on">Created: {{ task.created_at|date:"d/m/Y" }}</span>
+                    </div>
+                </article>
+                {% empty %}
+                <div class="empty-state">
+                    <div class="empty-icon"><i class="fas fa-check-square"></i></div>
+                    <h4>All clear!</h4>
+                    <p>You have no pending tasks. Add a new one to get started.</p>
                 </div>
-                {% if task.description %}
-                <p id="task{{ task.id }}-desc">{{ task.description|truncatewords:20 }}</p>
-                {% endif %}
-                <div class="task-footer" id="task{{ task.id }}-meta">
-                    <span class="priority {{ task.priority }}" role="status">Priority: {{ task.get_priority_display }}</span>
-                    <span class="status {{ task.status|slugify }}" role="status">Status: {{ task.get_status_display }}</span>
-                    <span class="created-on">Created: {{ task.created_at|date:"d/m/Y" }}</span>
-                </div>
-            </article>
-            {% empty %}
-            <div class="empty-state">
-                <div class="empty-icon"><i class="fas fa-check-square"></i></div>
-                <h4>All clear!</h4>
-                <p>You have no pending tasks. Add a new one to get started.</p>
+                {% endfor %}
             </div>
-            {% endfor %}
         </div>
     </section>
 

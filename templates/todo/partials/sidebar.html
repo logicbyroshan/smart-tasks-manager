@@ -1,13 +1,5 @@
 <aside class="sidebar" role="navigation" aria-label="Main navigation">
     {% if user.is_authenticated %}
-    <div class="profile-section">
-        {# UPDATED: Use the profile image #}
-        <img src="{{ user.profile.image.url }}" class="profile-pic" alt="User profile picture">
-        <div class="profile-info">
-            <h3>{{ user.get_full_name|default:user.username }}</h3>
-            <p>@{{ user.username }}</p>
-        </div>
-    </div>
     
     <nav class="sidebar-nav">
         <ul role="list">
@@ -17,11 +9,6 @@
                     <i class="fas fa-th-large" aria-hidden="true"></i> Dashboard
                 </a>
             </li>
-            <li class="{% if active_page == 'vital_tasks' %}active{% endif %}">
-                <a href="{% url 'vital_tasks' %}">
-                    <i class="fas fa-exclamation-triangle" aria-hidden="true"></i> Vital Task
-                </a>
-            </li>
             <li class="{% if active_page == 'my_tasks' %}active{% endif %}">
                 <a href="{% url 'my_tasks' %}">
                     <i class="fas fa-tasks" aria-hidden="true"></i> My Task
@@ -29,7 +16,7 @@
             </li>
             <li class="{% if active_page == 'task_categories' %}active{% endif %}">
                 <a href="{% url 'task_categories' %}">
-                    <i class="fas fa-list-alt" aria-hidden="true"></i> Task Categories
+                    <i class="fas fa-list-alt" aria-hidden="true"></i>Categories
                 </a>
             </li>
             <li class="{% if active_page == 'settings' %}active{% endif %}">
@@ -37,26 +24,18 @@
                     <i class="fas fa-cog" aria-hidden="true"></i> Settings
                 </a>
             </li>
-            <li class="{% if active_page == 'help' %}active{% endif %}">
-                <a href="{% url 'help' %}">
-                    <i class="fas fa-question-circle" aria-hidden="true"></i> Help
-                </a>
-            </li>
         </ul>
     </nav>
     
     <div class="logout-btn">
-        <form method="post" action="{% url 'logout' %}">
-            {% csrf_token %}
-            <button type="submit" aria-label="Logout">
-                <i class="fas fa-sign-out-alt" aria-hidden="true"></i> Logout
-            </button>
-        </form>
+        {# Logout will be handled by external auth app #}
+        <button type="button" aria-label="Logout" disabled style="opacity: 0.5; cursor: not-allowed;">
+            <i class="fas fa-sign-out-alt" aria-hidden="true"></i> Logout
+        </button>
     </div>
     {% else %}
     <div class="login-prompt">
-        <p>Please log in to manage your tasks.</p>
-        <a href="{% url 'login' %}" class="btn-primary">Login</a>
+        <p>Authentication handled by external app.</p>
     </div>
     {% endif %}
 </aside>

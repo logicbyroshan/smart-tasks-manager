@@ -9,12 +9,11 @@
 {% endblock styles %}
 
 {% block content %}
-<section class="welcome-section">
-    <h2>Task Categories</h2>
+<div class="category-header">
     <button class="invite-btn" id="add-category-btn" type="button" aria-label="Add new category">
         <i class="fas fa-plus"></i> Add Category
     </button>
-</section>
+</div>
 
 <!-- Container for all category cards -->
 <div id="category-cards-container">
@@ -47,27 +46,32 @@
 </div>
 
 <!-- Add/Edit Category Modal -->
-<div id="category-modal" class="modal-overlay" style="display: none;">
+<div id="category-modal" class="task-modal" style="display: none;">
+    <div class="modal-backdrop"></div>
     <div class="modal-content">
         <div class="modal-header">
-            <h2 id="category-modal-title">Add New Category</h2>
+            <h3><i class="fas fa-folder-plus"></i> Add New Category</h3>
             <button id="category-modal-close-btn" class="close-modal" aria-label="Close">&times;</button>
         </div>
         <form id="category-form" method="post" action="{% url 'category_create' %}">
             {% csrf_token %}
             <div class="modal-body">
                 <div class="form-group">
-                    <label for="id_name">Category Name</label>
+                    <label for="id_name"><i class="fas fa-tag"></i> Category Name *</label>
                     {{ form.name }}
                 </div>
                 <div class="form-group">
-                    <label for="id_color">Category Color</label>
+                    <label for="id_color"><i class="fas fa-palette"></i> Category Color</label>
                     {{ form.color }}
                 </div>
             </div>
-            <div class="modal-actions">
-                <button type="button" class="btn-cancel" id="category-modal-cancel-btn">Cancel</button>
-                <button type="submit" class="btn-submit">Save Category</button>
+            <div class="modal-actions form-actions">
+                <button type="button" class="btn-cancel" id="category-modal-cancel-btn">
+                    <i class="fas fa-times"></i> Cancel
+                </button>
+                <button type="submit" class="btn-submit">
+                    <i class="fas fa-check"></i> Save Category
+                </button>
             </div>
         </form>
     </div>

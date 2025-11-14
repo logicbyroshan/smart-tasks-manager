@@ -33,12 +33,14 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'todo.middleware.DemoAuthMiddleware',  # Demo auth - will be replaced by API auth
 ]
 
 ROOT_URLCONF = 'config.urls'
-LOGIN_URL = 'login'
+# Auth handled by external app - no login/logout URLs needed
+# LOGIN_URL = 'login'  # Removed - external auth
 LOGIN_REDIRECT_URL = 'dashboard'
-LOGOUT_REDIRECT_URL = 'landing'
+# LOGOUT_REDIRECT_URL = 'landing'  # Removed - external auth
 
 TEMPLATES = [
     {

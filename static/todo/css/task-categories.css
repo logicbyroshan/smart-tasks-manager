@@ -102,13 +102,22 @@ ADD/EDIT CATEGORY MODAL
 ==============================================
 */
 
-/* (Most modal styles are inherited from my-tasks.css) */
-/* Customizations for category modal */
+/* Additional customizations for category modal (inherits from style.css .task-modal) */
+
+#category-modal .form-group {
+    margin-bottom: 20px;
+}
 
 #category-modal .form-group label {
     display: block;
     margin-bottom: 8px;
     font-weight: 600;
+    color: var(--text-color);
+}
+
+#category-modal .form-group label i {
+    margin-right: 8px;
+    color: var(--accent-color);
 }
 
 #category-modal input[type="text"] {
@@ -119,6 +128,12 @@ ADD/EDIT CATEGORY MODAL
     background-color: var(--primary-bg);
     color: var(--text-color);
     font-size: 1em;
+    transition: border-color 0.3s ease;
+}
+
+#category-modal input[type="text"]:focus {
+    outline: none;
+    border-color: var(--accent-color);
 }
 
 #category-modal input[type="color"] {
@@ -129,6 +144,12 @@ ADD/EDIT CATEGORY MODAL
     border-radius: 8px;
     background-color: var(--primary-bg);
     cursor: pointer;
+    transition: border-color 0.3s ease;
+}
+
+#category-modal input[type="color"]:focus {
+    outline: none;
+    border-color: var(--accent-color);
 }
 
 /* Responsive adjustments */

@@ -9,32 +9,30 @@
 {% endblock styles %}
 
 {% block content %}
-<section class="welcome-section">
-    <h2>My Tasks</h2>
-    <a href="{% url 'task_create' %}" class="invite-btn" type="button" aria-label="Add new task">
-        <i class="fas fa-plus" aria-hidden="true"></i> Add Task
-    </a>
-</section>
-
 <!-- Filter and Sort Bar (Functionality to be added with JavaScript or form submission) -->
 <div class="filter-bar">
-    <div class="filter-group">
-        <label for="sort-by">Sort By:</label>
-        <select id="sort-by">
-            <option value="date-created">Date Created</option>
-            <option value="due-date">Due Date</option>
-            <option value="priority">Priority</option>
-        </select>
+    <div class="filter-options">
+        <div class="filter-group">
+            <label for="sort-by">Sort By:</label>
+            <select id="sort-by">
+                <option value="date-created">Date Created</option>
+                <option value="due-date">Due Date</option>
+                <option value="priority">Priority</option>
+            </select>
+        </div>
+        <div class="filter-group">
+            <label for="filter-status">Status:</label>
+            <select id="filter-status">
+                <option value="all">All</option>
+                <option value="not-started">Not Started</option>
+                <option value="in-progress">In Progress</option>
+                <option value="completed">Completed</option>
+            </select>
+        </div>
     </div>
-    <div class="filter-group">
-        <label for="filter-status">Status:</label>
-        <select id="filter-status">
-            <option value="all">All</option>
-            <option value="not-started">Not Started</option>
-            <option value="in-progress">In Progress</option>
-            <option value="completed">Completed</option>
-        </select>
-    </div>
+    <button class="invite-btn" type="button" aria-label="Add new task">
+        <i class="fas fa-plus" aria-hidden="true"></i> Add Task
+    </button>
 </div>
 
 <!-- Grid for All Task Cards -->
@@ -106,9 +104,9 @@
                     <i class="fas fa-trash"></i> Delete
                 </button>
             </form>
-            <a id="modal-edit-link" href="#" class="btn-edit-task">
+            <button type="button" id="modal-edit-btn" class="btn-edit-task" onclick="openEditTaskModal(0)">
                 <i class="fas fa-edit"></i> Edit Task
-            </a>
+            </button>
         </div>
     </div>
 </div>
@@ -141,7 +139,8 @@
 
                 // Set dynamic URLs for actions
                 document.getElementById('modal-delete-form').action = `/task/${taskId}/delete/`;
-                document.getElementById('modal-edit-link').href = `/task/${taskId}/update/`;
+                // Update edit button to call the edit modal with the correct task ID
+                document.getElementById('modal-edit-btn').onclick = () => openEditTaskModal(taskId);
 
                 modal.style.display = 'flex';
             };

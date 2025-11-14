@@ -8,7 +8,6 @@ SETTINGS PAGE STYLES
     display: grid;
     grid-template-columns: 1fr;
     gap: 25px;
-    margin-top: 20px;
 }
 
 /* Individual settings card styling */

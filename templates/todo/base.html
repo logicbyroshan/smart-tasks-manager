@@ -32,7 +32,7 @@
         <!-- Main Navigation Header (Consistent across all pages) -->
         <header class="navbar" role="banner">
             <div class="navbar-left">
-                <img src="{% static 'todo/logo.png' %}" alt="TaskMitra Logo" class="logo-img">
+                <img src="{% static 'todo/images/logo.png' %}" alt="TaskMitra Logo" class="logo-img">
                 <a href="{% url 'dashboard' %}" style="text-decoration: none;">
                     <h1 class="logo">Task<span>Mitra</span></h1>
                 </a>
@@ -43,19 +43,20 @@
                     <input type="text" id="search-input" placeholder="Search your task here..." aria-label="Search tasks">
                     <i class="fas fa-search" aria-hidden="true"></i>
                 </div>
-                <div class="nav-icons">
-                    <button class="icon-btn" aria-label="Notifications" title="Notifications">
-                        <i class="fas fa-bell" aria-hidden="true"></i>
-                    </button>
-                    <button class="icon-btn" aria-label="Calendar" title="Calendar">
-                        <i class="fas fa-calendar-alt" aria-hidden="true"></i>
-                    </button>
-                </div>
                 <div class="date-day" role="status" aria-live="polite">
                     <!-- This could be dynamic with JavaScript or a context processor -->
-                    <span>Tuesday</span>
                     <span>20/06/2023</span>
                 </div>
+                {% if user.is_authenticated %}
+                <div class="navbar-profile">
+                    <div class="profile-pic">
+                        {{ user.username|slice:":1"|upper }}
+                    </div>
+                    <div class="profile-info">
+                        <span class="profile-name">{{ user.get_full_name|default:user.username }}</span>
+                    </div>
+                </div>
+                {% endif %}
             </div>
         </header>
 
@@ -77,7 +78,7 @@
         <div class="modal-backdrop"></div>
         <div class="modal-content">
             <div class="modal-header">
-                <h3>Add New Task</h3>
+                <h3><i class="fas fa-plus-circle"></i> Add New Task</h3>
                 <button class="close-modal" aria-label="Close">&times;</button>
             </div>
             {# The action points to our task_create view #}
@@ -85,41 +86,148 @@
             {% csrf_token %}
             <div class="modal-body">
                 
-                <div class="form-group">
-                    <label for="{{ task_create_form.title.id_for_label }}">Title:</label>
+                <!-- Title - Full width -->
+                <div class="form-group form-grid-full">
+                    <label for="{{ task_create_form.title.id_for_label }}">
+                        <i class="fas fa-heading"></i> Task Title *
+                    </label>
                     {{ task_create_form.title }}
                 </div>
                 
-                <div class="form-group">
-                    <label for="{{ task_create_form.description.id_for_label }}">Description:</label>
+                <!-- Description - Full width -->
+                <div class="form-group form-grid-full">
+                    <label for="{{ task_create_form.description.id_for_label }}">
+                        <i class="fas fa-align-left"></i> Description
+                    </label>
                     {{ task_create_form.description }}
                 </div>
                 
-                <div class="form-group">
-                    <label for="{{ task_create_form.category.id_for_label }}">Category:</label>
-                    {{ task_create_form.category }}
-                </div>
-                
-                <div class="form-group">
-                    <label for="{{ task_create_form.priority.id_for_label }}">Priority:</label>
-                    {{ task_create_form.priority }}
-                </div>
-                
-                <div class="form-group">
-                    <label for="{{ task_create_form.status.id_for_label }}">Status:</label>
-                    {{ task_create_form.status }}
-                </div>
-                
-                <div class="form-group">
-                    <label for="{{ task_create_form.due_date.id_for_label }}">Due date:</label>
-                    {{ task_create_form.due_date }}
+                <!-- Two columns for smaller fields -->
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="{{ task_create_form.category.id_for_label }}">
+                            <i class="fas fa-folder"></i> Category
+                        </label>
+                        {{ task_create_form.category }}
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="{{ task_create_form.priority.id_for_label }}">
+                            <i class="fas fa-exclamation-circle"></i> Priority
+                        </label>
+                        {{ task_create_form.priority }}
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="{{ task_create_form.status.id_for_label }}">
+                            <i class="fas fa-tasks"></i> Status
+                        </label>
+                        {{ task_create_form.status }}
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="{{ task_create_form.due_date.id_for_label }}">
+                            <i class="fas fa-calendar-alt"></i> Due Date
+                        </label>
+                        {{ task_create_form.due_date }}
+                    </div>
                 </div>
 
             </div>
             <div class="modal-actions form-actions">
-                <button type="button" class="btn-cancel">Cancel</button>
-                <button type="submit" class="btn-submit">Add Task</button>
+                <button type="button" class="btn-cancel">
+                    <i class="fas fa-times"></i> Cancel
+                </button>
+                <button type="submit" class="btn-submit">
+                    <i class="fas fa-check"></i> Add Task
+                </button>
             </div>
+        </form>
+    </div>
+</div>
+
+<!-- Edit Task Modal -->
+<div id="edit-task-modal" class="task-modal" style="display: none;">
+    <div class="modal-backdrop"></div>
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3><i class="fas fa-edit"></i> Edit Task</h3>
+            <button class="close-modal" aria-label="Close">&times;</button>
+        </div>
+        <form id="edit-task-form" class="task-form" method="post">
+        {% csrf_token %}
+        <input type="hidden" id="edit-task-id" name="task_id">
+        <div class="modal-body">
+            
+            <!-- Title - Full width -->
+            <div class="form-group form-grid-full">
+                <label for="edit-title">
+                    <i class="fas fa-heading"></i> Task Title *
+                </label>
+                <input type="text" id="edit-title" name="title" required>
+            </div>
+            
+            <!-- Description - Full width -->
+            <div class="form-group form-grid-full">
+                <label for="edit-description">
+                    <i class="fas fa-align-left"></i> Description
+                </label>
+                <textarea id="edit-description" name="description" rows="4"></textarea>
+            </div>
+            
+            <!-- Two columns for smaller fields -->
+            <div class="form-grid">
+                <div class="form-group">
+                    <label for="edit-category">
+                        <i class="fas fa-folder"></i> Category
+                    </label>
+                    <select id="edit-category" name="category">
+                        <option value="">---------</option>
+                        {% for category in user.category_set.all %}
+                        <option value="{{ category.id }}">{{ category.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="edit-priority">
+                        <i class="fas fa-exclamation-circle"></i> Priority
+                    </label>
+                    <select id="edit-priority" name="priority">
+                        <option value="low">Low</option>
+                        <option value="medium">Medium</option>
+                        <option value="high">High</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="edit-status">
+                        <i class="fas fa-tasks"></i> Status
+                    </label>
+                    <select id="edit-status" name="status">
+                        <option value="not_started">Not Started</option>
+                        <option value="in_progress">In Progress</option>
+                        <option value="completed">Completed</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="edit-due_date">
+                        <i class="fas fa-calendar-alt"></i> Due Date
+                    </label>
+                    <input type="date" id="edit-due_date" name="due_date">
+                </div>
+            </div>
+
+        </div>
+        <div class="modal-actions form-actions">
+            <button type="button" class="btn-cancel">
+                <i class="fas fa-times"></i> Cancel
+            </button>
+            <button type="submit" class="btn-submit">
+                <i class="fas fa-check"></i> Update Task
+            </button>
+        </div>
         </form>
     </div>
 </div>

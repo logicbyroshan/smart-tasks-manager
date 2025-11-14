@@ -1,16 +1,29 @@
 from django import forms
-from .models import Task, Category, Profile
-from django.contrib.auth.forms import UserCreationForm
+from .models import Task, Category
 from django.contrib.auth.models import User
+
 
 class TaskForm(forms.ModelForm):
     class Meta:
         model = Task
         fields = ['title', 'description', 'category', 'priority', 'status', 'due_date']
         widgets = {
-            'title': forms.TextInput(attrs={'placeholder': 'Enter task title...'}),
-            'description': forms.Textarea(attrs={'rows': 3, 'placeholder': 'Enter task description...'}),
-            'due_date': forms.DateInput(attrs={'type': 'date'}),
+            'title': forms.TextInput(attrs={
+                'placeholder': 'Enter task title...',
+                'class': 'form-control'
+            }),
+            'description': forms.Textarea(attrs={
+                'id': 'task-description-editor',
+                'placeholder': 'Enter task description...',
+                'class': 'form-control'
+            }),
+            'due_date': forms.DateInput(attrs={
+                'type': 'date',
+                'class': 'form-control'
+            }),
+            'priority': forms.Select(attrs={'class': 'form-control'}),
+            'status': forms.Select(attrs={'class': 'form-control'}),
+            'category': forms.Select(attrs={'class': 'form-control'}),
         }
         
     def __init__(self, *args, **kwargs):
@@ -28,24 +41,27 @@ class CategoryForm(forms.ModelForm):
         model = Category
         fields = ['name', 'color']
         widgets = {
-            'name': forms.TextInput(attrs={'placeholder': 'e.g., Health'}),
-            'color': forms.TextInput(attrs={'type': 'color'}),
+            'name': forms.TextInput(attrs={
+                'placeholder': 'e.g., Work, Personal, Health',
+                'class': 'form-control'
+            }),
+            'color': forms.TextInput(attrs={
+                'type': 'color',
+                'class': 'form-control'
+            }),
         }
 
-class RegistrationForm(UserCreationForm):
-    first_name = forms.CharField(max_length=30, required=True, help_text='Required.')
-    last_name = forms.CharField(max_length=30, required=True, help_text='Required.')
-
-    class Meta(UserCreationForm.Meta):
-        model = User
-        fields = UserCreationForm.Meta.fields + ('first_name', 'last_name', 'email')
 
 class UserUpdateForm(forms.ModelForm):
     class Meta:
         model = User
         fields = ['username', 'first_name', 'last_name', 'email']
+        widgets = {
+            'username': forms.TextInput(attrs={'class': 'form-control'}),
+            'first_name': forms.TextInput(attrs={'class': 'form-control'}),
+            'last_name': forms.TextInput(attrs={'class': 'form-control'}),
+            'email': forms.EmailInput(attrs={'class': 'form-control'}),
+        }
 
-class ProfileUpdateForm(forms.ModelForm):
-    class Meta:
-        model = Profile
-        fields = ['image']
+
+# Removed: Profile, RegistrationForm (auth handled by another app)

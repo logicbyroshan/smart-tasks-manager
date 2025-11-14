@@ -17,8 +17,9 @@ body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     color: var(--text-color);
     background-color: var(--primary-bg);
-    overflow-x: hidden;
+    overflow: hidden;
     position: relative;
+    height: 100vh;
 }
 
 /* Circular Gradient Background */

@@ -31,10 +31,6 @@
 {% endblock styles %}
 
 {% block content %}
-<section class="welcome-section">
-    <h2>Settings</h2>
-</section>
-
 {# Display success messages from the view #}
 {% if messages %}
     {% for message in messages %}
@@ -49,8 +45,8 @@
             <h3><i class="fas fa-user-edit"></i> Profile Information</h3>
         </header>
         <div class="settings-card-body">
-            {# This form now handles both user data and profile picture upload #}
-            <form method="post" enctype="multipart/form-data">
+            {# Profile update - no password or image (auth handled externally) #}
+            <form method="post">
                 {% csrf_token %}
                 
                 <div class="form-group">
@@ -73,17 +69,8 @@
                     {{ u_form.email }}
                     {{ u_form.email.errors }}
                 </div>
-
-                <hr style="border-color: var(--border-color); margin: 20px 0;">
-
-                <div class="form-group">
-                    <label>Profile Picture</label>
-                    <img class="profile-pic-preview" src="{{ user.profile.image.url }}" alt="Current profile picture">
-                    {{ p_form.image }}
-                    {{ p_form.image.errors }}
-                </div>
                 
-                <button type="submit" name="update_profile" class="btn-submit">Save Changes</button>
+                <button type="submit" class="btn-submit">Save Changes</button>
             </form>
         </div>
     </article>
@@ -102,38 +89,6 @@
                     <button class="theme-option" data-theme="system">System</button>
                 </div>
             </div>
-        </div>
-    </article>
-
-    <article class="settings-card">
-        <header class="settings-card-header">
-            <h3><i class="fas fa-key"></i> Change Password</h3>
-        </header>
-        <div class="settings-card-body">
-            <form method="post">
-                {% csrf_token %}
-
-                {# Display any non-field errors (e.g., "Old password incorrect") #}
-                {{ pass_form.non_field_errors }}
-                
-                <div class="form-group">
-                    <label for="{{ pass_form.old_password.id_for_label }}">Old Password</label>
-                    {{ pass_form.old_password }}
-                    {{ pass_form.old_password.errors }}
-                </div>
-                 <div class="form-group">
-                    <label for="{{ pass_form.new_password1.id_for_label }}">New Password</label>
-                    {{ pass_form.new_password1 }}
-                    {{ pass_form.new_password1.errors }}
-                </div>
-                 <div class="form-group">
-                    <label for="{{ pass_form.new_password2.id_for_label }}">Confirm New Password</label>
-                    {{ pass_form.new_password2 }}
-                    {{ pass_form.new_password2.errors }}
-                </div>
-                
-                <button type="submit" name="change_password" class="btn-submit">Update Password</button>
-            </form>
         </div>
     </article>
 

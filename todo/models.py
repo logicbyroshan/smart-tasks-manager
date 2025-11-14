@@ -4,12 +4,7 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.utils import timezone
 
-class Profile(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
-    image = models.ImageField(default='profile_pics/default.png', upload_to='profile_pics')
 
-    def __str__(self):
-        return f'{self.user.username} Profile'
 class Category(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='categories')
     name = models.CharField(max_length=100)
@@ -38,7 +33,7 @@ class Task(models.Model):
     category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True, blank=True, related_name='tasks')
     
     title = models.CharField(max_length=200)
-    description = models.TextField(blank=True, null=True)
+    description = models.TextField(blank=True, null=True)  # Will store rich HTML content
     
     priority = models.CharField(
         max_length=10,

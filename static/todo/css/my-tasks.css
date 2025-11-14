@@ -9,11 +9,19 @@ MY TASKS PAGE STYLES
     display: flex;
     gap: 20px;
     align-items: center;
+    justify-content: space-between;
     padding: 15px 20px;
     background-color: var(--secondary-bg);
     border: 1px solid var(--border-color);
     border-radius: 10px;
     margin-bottom: 20px;
+    flex-wrap: wrap;
+}
+
+.filter-options {
+    display: flex;
+    gap: 20px;
+    align-items: center;
     flex-wrap: wrap;
 }
 
