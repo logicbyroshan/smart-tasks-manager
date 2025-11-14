@@ -89,7 +89,7 @@
 
 ## 🛠️ Tech Stack
 
-<div align="center">
+<div align="left" width="100%">
 
 | Technology | Version | Purpose |
 |:-----------|:--------|:--------|
